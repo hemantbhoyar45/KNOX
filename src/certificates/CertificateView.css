@@ -1,0 +1,87 @@
+.cert-view-shell {
+  min-height: 100vh;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.cert-paper {
+  background: #ffffff;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 1.414; /* A4 landscape roughly */
+  border-radius: 8px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Creating an inner border styling commonly found in certificates */
+.cert-content {
+  border: 4px double #cbd5e1;
+  height: 100%;
+  padding: 2.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  position: relative;
+  background: 
+    linear-gradient(135deg, rgba(99,102,241,0.03) 0%, transparent 100%),
+    radial-gradient(circle at center, transparent 0%, rgba(241,245,249,0.5) 100%);
+}
+
+.cert-head { margin-bottom: 1.5rem; }
+.cert-logo { font-size: 1.5rem; font-weight: 900; color: #6366f1; letter-spacing: 0.1em; display: inline-block; margin-bottom: 1rem; }
+.cert-head h1 { font-size: 2.5rem; color: #0f172a; margin: 0 0 1rem 0; font-weight: 800; letter-spacing: 0.15em; font-family: 'Georgia', serif; }
+.cert-subtitle { color: #64748b; font-size: 0.95rem; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+.cert-body { margin-bottom: 2rem; }
+.student-name { font-size: 3rem; color: #1e293b; font-family: 'Georgia', serif; font-style: italic; margin: 0; }
+.divider { width: 150px; height: 2px; background: #6366f1; margin: 1rem auto; }
+.cert-has { color: #64748b; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 1rem 0 0.5rem 0; }
+.course-name { font-size: 2rem; color: #0f172a; margin: 0; font-weight: 700; }
+
+.cert-stats { display: flex; justify-content: center; gap: 3rem; margin-bottom: 2rem; }
+.stat-pill { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.stat-pill .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+.stat-pill .value { font-size: 1.1rem; color: #1e293b; font-weight: 700; }
+
+.value.level-beginner { color: #8b5cf6; }
+.value.level-intermediate { color: #3b82f6; }
+.value.level-advanced { color: #f59e0b; }
+.value.level-expert { color: #ef4444; }
+
+.cert-footer { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 2rem; }
+
+.qr-section { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.qr-box { padding: 4px; border: 2px solid #cbd5e1; border-radius: 8px; background: white; }
+.qr-hint { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin: 0; }
+
+.signature-section { text-align: center; }
+.signature-line { border-bottom: 1px solid #94a3b8; padding-bottom: 0.5rem; margin-bottom: 0.25rem; width: 200px; }
+.sig-text { font-family: 'Brush Script MT', 'Dancing Script', cursive; font-size: 1.5rem; color: #0f172a; }
+.signature-section p { margin: 0; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+
+.cert-actions { margin-top: 2rem; display: flex; gap: 1rem; }
+.cert-button { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.95rem;}
+.cert-button.back { background: transparent; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); }
+.cert-button.back:hover { background: rgba(255,255,255,0.05); color: white; }
+.cert-button.print { background: #6366f1; color: white; box-shadow: 0 4px 15px rgba(99,102,241,0.4); }
+.cert-button.print:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(99,102,241,0.5); }
+
+/* Print Mode */
+@media print {
+  body { background: white !important; margin: 0; padding: 0; }
+  .cert-view-shell { background: white; padding: 0; min-height: auto; }
+  .cert-actions { display: none !important; }
+  .cert-paper { box-shadow: none !important; transform: scale(1) !important; max-width: none !important; }
+}
+
+.cert-error-page { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; background: #0f172a; gap: 1rem; }
+.cert-error-page button { padding: 0.75rem 1.5rem; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; }

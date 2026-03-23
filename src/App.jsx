@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import LoginPage from './LoginPage'
 import StudentDashboard from './StudentDashboard'
 import LearningFlowPage from './LearningFlowPage'
+import ProctorFlow from './proctoring/ProctorFlow'
+import CertificateView from './certificates/CertificateView'
+import CertificateVerificationPage from './certificates/CertificateVerificationPage'
 import './App.css'
 
 function App() {
@@ -16,6 +19,18 @@ function App() {
 
     if (window.location.pathname === '/learning') {
       return '/learning'
+    }
+
+    if (window.location.pathname === '/exam') {
+      return '/exam'
+    }
+
+    if (window.location.pathname.startsWith('/certificate/')) {
+      return window.location.pathname
+    }
+
+    if (window.location.pathname.startsWith('/verify/')) {
+      return window.location.pathname
     }
 
     return '/'
@@ -76,6 +91,16 @@ function App() {
         onGoHome={() => navigateTo('/')}
         onLogOut={() => navigateTo('/login')}
         onResumeCourse={openLearningFlow}
+        onTakeExam={() => navigateTo('/exam')}
+      />
+    )
+  }
+
+  if (route === '/exam') {
+    return (
+      <ProctorFlow
+        studentName="Atharv Bhavsar"
+        onExit={() => navigateTo('/dashboard')}
       />
     )
   }
@@ -87,6 +112,16 @@ function App() {
         onBackDashboard={() => navigateTo('/dashboard')}
       />
     )
+  }
+
+  if (route.startsWith('/certificate/')) {
+    const certId = route.split('/')[2]
+    return <CertificateView certId={certId} onBack={() => navigateTo('/dashboard')} />
+  }
+
+  if (route.startsWith('/verify/')) {
+    // The component manages its own ID extraction so just render it. This is usually public.
+    return <CertificateVerificationPage />
   }
 
   return (

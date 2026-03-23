@@ -3,9 +3,11 @@ import ReactPlayer from 'react-player'
 import { buildAuthenticityReport } from './authenticity/authenticityEngine'
 import { fetchCohereAuthenticitySignals } from './authenticity/cohereClient'
 import PracticeModule from './PracticeModule'
+import InlineProctoring from './proctoring/InlineProctoring'
+import { issueOrUpdateCertificate } from './certificates/CertificateManager'
 import './LearningFlowPage.css'
 
-const DEFAULT_LESSON_VIDEO_URL = 'https://vjs.zencdn.net/v/oceans.mp4'
+const DEFAULT_LESSON_VIDEO_URL = 'https://www.youtube.com/watch?v=kqtD5dpn9C8'
 
 const LESSON_MODULES = [
   '1. Python Fundamentals and Variables',
@@ -13,6 +15,9 @@ const LESSON_MODULES = [
   '3. Functions and Data Structures',
   '4. Explainability and Problem Breakdown',
   '5. Practice Lab and Validation',
+  '6. Beginner Certification Exam',
+  '7. Intermediate Certification Exam',
+  '8. Expert Certification Exam',
 ]
 
 const QUIZ_ITEMS = [
@@ -86,6 +91,7 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
   const [authServiceError, setAuthServiceError] = useState('')
   const [reportReady, setReportReady] = useState(false)
   const [videoLoadError, setVideoLoadError] = useState(false)
+  const [certResult, setCertResult] = useState(null)
 
   const [engagement, setEngagement] = useState({
     rewinds: 0,
@@ -101,6 +107,9 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
 
   const currentQuestion = QUIZ_ITEMS[quizIndex]
   const lessonVideoUrl = lessonContext?.videoUrl || DEFAULT_LESSON_VIDEO_URL
+
+  // The cert issuance logic is completely ripped out from the Lesson module
+  // and moved into the 6, 7, and 8 Modules directly.
 
   useEffect(() => {
     const updateActivity = () => {
@@ -403,8 +412,8 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
         : 'Your behavior indicates stable flow with manageable cognitive load.'
 
     const authenticitySummary = authResult?.suspicious
-      ? `Written explanation shows authenticity risk (${authResult.suspiciousLevel}). Cohere semantic signals and the ML classifier both detected assisted-writing patterns.`
-      : 'Written explanation appears genuine. Cohere semantic review and ML classifier indicate student-like response behavior.'
+      ? `Written explanation shows authenticity risk (${authResult.suspiciousLevel}). RoBERTa semantic signals and the ML classifier both detected assisted-writing patterns.`
+      : 'Written explanation appears genuine. RoBERTa semantic review and ML classifier indicate student-like response behavior.'
 
     const nextAction =
       learnerState === 'strong understanding'
@@ -492,6 +501,45 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
         <section className="lesson-main">
           {activeModule === 4 ? (
             <PracticeModule masteryLevel={report?.learnerState === 'strong understanding' ? 'high' : 'low'} />
+          ) : activeModule >= 5 ? (
+            <div className="module-placeholder" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', marginTop: '1rem' }}>
+              <h2 style={{ color: '#0f172a', marginBottom: '0.5rem', fontSize: '2rem' }}>{LESSON_MODULES[activeModule].substring(3)}</h2>
+              <p style={{ color: '#64748b', marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
+                This is a proctored full-module milestone exam. Successful completion will permanently upgrade
+                your live verified certificate level on the blockchain database.
+              </p>
+
+              {certResult && certResult.moduleMatch === activeModule ? (
+                <div style={{ padding: '2rem', border: '1px solid #22c55e', borderRadius: '12px', background: 'rgba(34,197,94,0.05)', maxWidth: '400px', margin: '0 auto' }}>
+                  <h3 style={{ color: '#16a34a', margin: '0 0 1rem 0' }}>✅ {certResult.upgraded ? 'Skill Upgraded' : 'Exam Passed'}</h3>
+                  <p style={{ margin: '0 0 1.5rem 0', color: '#1e293b' }}>
+                    Current Live Level: <strong>{certResult.currentLevel}</strong>
+                  </p>
+                  <button 
+                    type="button" 
+                    onClick={() => window.location.href = `/certificate/${certResult.certId}`}
+                    style={{ background: '#22c55e', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: 'pointer', width: '100%', boxShadow: '0 4px 6px rgba(34,197,94,0.3)' }}
+                  >
+                    View Master QR Certificate
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  type="button"
+                  onClick={() => {
+                    // Mapped: activeModule 5 -> Beginner, 6 -> Intermediate, 7 -> Expert
+                    const targetLevel = activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'
+                    const res = issueOrUpdateCertificate('Atharv Bhavsar', lessonContext?.courseName || 'Python for Automation', 0, targetLevel)
+                    if (res.success) {
+                      setCertResult({ ...res, moduleMatch: activeModule })
+                    }
+                  }}
+                  style={{ background: '#0f172a', color: 'white', padding: '1rem 2rem', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}
+                >
+                  Simulate Exam Passing & Claim '{activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'}' Level
+                </button>
+              )}
+            </div>
           ) : activeModule === 2 ? (
             <>
               <article className="video-card">
@@ -607,9 +655,29 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
 
           {assessmentOpen && (
             <section className="assessment-panel" aria-live="polite">
-              <div className="assessment-head">
+              <div className="assessment-head" style={{ marginBottom: '1rem' }}>
                 <h2>Mandatory Understanding Check</h2>
                 <p>You must complete this cognitive validation before progressing.</p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '1.5rem', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ flex: 1 }}>
+                  <h4>🔒 Strict Proctoring Mode Enabled</h4>
+                  <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: '0.5rem 0' }}>Camera, microphone, and browser activity are being continuously monitored. Tab switching or extensions are disabled.</p>
+                  
+                  {warningText && (
+                    <div style={{ padding: '0.75rem', background: 'rgba(239,68,68,0.15)', border: '1px solid #ef4444', borderRadius: '8px', color: '#fca5a5', fontSize: '0.85rem', marginTop: '0.5rem', animation: 'pulse 1.5s infinite' }}>
+                      <strong>{warningText}</strong>
+                    </div>
+                  )}
+                </div>
+                <InlineProctoring 
+                  strictMode={true} 
+                  onViolation={(type, detail) => {
+                    setWarningText(`Alert: ${detail}`)
+                    setTimeout(() => setWarningText(''), 4000)
+                  }} 
+                />
               </div>
 
               {stage === 'quiz' && (
@@ -625,10 +693,17 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
                         <button
                           type="button"
                           key={option}
+                          disabled={!!warningText}
                           className={draftAnswer === option ? 'selected' : ''}
                           onClick={() => {
-                            setDraftAnswer(option)
-                            setAnswerChanges((prev) => prev + 1)
+                            if (!warningText) {
+                              setDraftAnswer(option)
+                              setAnswerChanges((prev) => prev + 1)
+                            }
+                          }}
+                          style={{
+                            opacity: warningText ? 0.5 : 1,
+                            cursor: warningText ? 'not-allowed' : 'pointer'
                           }}
                         >
                           {option}
@@ -686,20 +761,43 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
                   </p>
                   <textarea
                     value={explanationText}
+                    disabled={!!warningText}
                     rows={6}
-                    onPaste={() => setDidPaste(true)}
-                    onChange={(event) => {
-                      setExplanationText(event.target.value)
-                      setAnswerChanges((prev) => prev + 1)
+                    onPaste={(e) => {
+                      e.preventDefault() // block standard paste natively
+                      setDidPaste(true)
+                      setWarningText('Alert: COPY_PASTE attempt blocked')
+                      setTimeout(() => setWarningText(''), 4000)
                     }}
-                    placeholder="I understood that..."
+                    onChange={(event) => {
+                      if (!warningText) {
+                        const newText = event.target.value
+                        
+                        // AGGRESSIVE ANTI-EXTENSION: Text Length Jump Check
+                        // If they bypass the paste event using a browser extension that forces paste via JS value injection:
+                        // No human can type 15+ characters in a single keystroke!
+                        if (Math.abs(newText.length - explanationText.length) > 15) {
+                           setDidPaste(true)
+                           setWarningText('Alert: COPY_PASTE attempt blocked (Extension Bypass Detected)')
+                           setTimeout(() => setWarningText(''), 4000)
+                           return // DO NOT update the text state
+                        }
+
+                        setExplanationText(newText)
+                        setAnswerChanges((prev) => prev + 1)
+                      }
+                    }}
+                    placeholder={warningText ? 'Writing blocked! Please look at the screen.' : 'I understood that...'}
+                    style={{ 
+                      flex: 1, 
+                      width: '100%',
+                      border: warningText ? '2px solid #ef4444' : undefined,
+                      opacity: warningText ? 0.7 : 1,
+                      background: warningText ? 'rgba(239,68,68,0.1)' : undefined
+                    }}
                   />
 
-                  {warningText && (
-                    <div className="auth-warning" role="alert">
-                      {warningText}
-                    </div>
-                  )}
+                  {/* Warning rendering handled globally above module */}
 
                   <div className="explain-actions">
                     <button
@@ -707,7 +805,7 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
                       onClick={handleAnalyzeExplanation}
                       disabled={isAnalyzingAuth || !explanationText.trim()}
                     >
-                      {isAnalyzingAuth ? 'Analyzing with Cohere + ML...' : 'Analyze My Answer'}
+                      {isAnalyzingAuth ? 'Analyzing with RoBERTa + ML...' : 'Analyze My Answer'}
                     </button>
                     <button type="button" className="ghost" onClick={handleRetryExplanation}>
                       Retry Fresh Response
@@ -813,6 +911,7 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
                     <button type="button" onClick={onBackDashboard}>
                       Continue to Dashboard
                     </button>
+                    {/* Certificate issuance removed from here per user request. Available in modules 6, 7, 8 */}
                     <button type="button" className="ghost" onClick={handleRetryExplanation}>
                       Retry Explanation
                     </button>

@@ -52,7 +52,7 @@ const recommendations = [
   },
 ]
 
-function StudentDashboard({ onGoHome, onLogOut, onResumeCourse }) {
+function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam }) {
   return (
     <div className="dashboard-shell">
       <header className="dashboard-topbar">
@@ -124,6 +124,21 @@ function StudentDashboard({ onGoHome, onLogOut, onResumeCourse }) {
               <p>Study Hours</p>
               <strong>46h</strong>
             </article>
+          </div>
+          <div style={{ marginTop: '1.5rem' }}>
+            <button
+              type="button"
+              onClick={onTakeExam}
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                color: 'white', border: 'none', borderRadius: '10px',
+                fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(99,102,241,0.35)'
+              }}
+            >
+              🛡 Take Proctored Exam
+            </button>
           </div>
         </section>
 
