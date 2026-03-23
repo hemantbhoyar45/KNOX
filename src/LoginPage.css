@@ -1,0 +1,216 @@
+.login-shell {
+  min-height: 100dvh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.2rem 1.5rem 2.2rem;
+  color: #1f2943;
+}
+
+.login-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+}
+
+.back-home {
+  border: 1px solid #d0d8ff;
+  border-radius: 999px;
+  background: #f5f7ff;
+  color: #3e4ac3;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+}
+
+.login-logo {
+  text-decoration: none;
+  color: #4c58de;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.login-layout {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  min-height: calc(100dvh - 110px);
+}
+
+.login-card {
+  background: linear-gradient(160deg, #f7f9ff, #eef2ff 60%, #edf1ff);
+  border: 1px solid #d9e0ff;
+  border-radius: 24px;
+  padding: 2.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-tag {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0;
+  background: #e4e8ff;
+  color: #4f5ad9;
+  border-radius: 999px;
+  padding: 0.4rem 0.78rem;
+  font-size: 0.82rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.login-card h1 {
+  margin: 0.95rem 0 0.6rem;
+  font-family: 'Sora', sans-serif;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  font-size: clamp(2rem, 5vw, 3.35rem);
+}
+
+.login-copy {
+  margin: 0 0 1.5rem;
+  color: #5b6483;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.65;
+}
+
+.login-form {
+  display: grid;
+  gap: 0.58rem;
+}
+
+.login-form label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  color: #3c4668;
+  font-weight: 600;
+}
+
+.login-form input {
+  border: 1px solid #ccd4f9;
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.97rem;
+  color: #1f2943;
+  background: #fbfcff;
+}
+
+.login-form input:focus {
+  outline: 2px solid rgba(95, 106, 244, 0.35);
+  border-color: #616cee;
+}
+
+.login-row {
+  margin-top: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.remember-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.remember-check input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.login-row a,
+.signup-copy a {
+  color: #4a58dd;
+  text-decoration: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+}
+
+.signin-btn {
+  margin-top: 0.75rem;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.92rem 1rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #5f69f4, #4657e0);
+  box-shadow: 0 12px 22px rgba(72, 85, 214, 0.27);
+  cursor: pointer;
+}
+
+.signup-copy {
+  margin: 1.25rem 0 0;
+  color: #616b8b;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.93rem;
+}
+
+.benefits-panel {
+  border-radius: 24px;
+  padding: 2.1rem;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(194, 231, 255, 0.35), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(187, 189, 255, 0.26), transparent 40%),
+    linear-gradient(145deg, #263159, #1e294a);
+  color: #ebefff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 18px 34px rgba(25, 35, 70, 0.32);
+}
+
+.benefits-panel h2 {
+  margin: 0 0 1.1rem;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.03em;
+  font-size: clamp(1.55rem, 3.2vw, 2.25rem);
+}
+
+.benefits-panel ul {
+  margin: 0;
+  padding-left: 1.05rem;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.benefits-panel li {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #d7deff;
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+  .login-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .login-card,
+  .benefits-panel {
+    padding: 1.45rem;
+  }
+
+  .login-card {
+    order: 2;
+  }
+
+  .benefits-panel {
+    order: 1;
+  }
+
+  .login-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

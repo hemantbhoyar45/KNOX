@@ -1,0 +1,15 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(120% 120% at 50% -20%, #f9fbff 0%, #f2f5ff 38%, #edf0fb 100%),
+    #eef1fa;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+}
