@@ -8,14 +8,25 @@ const activeCourses = [
     lesson: 'Functions, Loops, and Real-World Scripting',
     duration: '22 min left',
     hue: 'indigo',
+    image: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?q=80&w=600&auto=format&fit=crop', // Hacker code style
   },
   {
     title: 'Python Data Analysis Basics',
-    instructor: 'Jordan Kim',
+    instructor: 'Chai Aur Code',
     progress: 41,
     lesson: 'List Comprehensions and Data Cleanup',
     duration: '19 min left',
     hue: 'teal',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwMcfyVmfJNemVg4mKm_wdGa2x_RCptbw8UA&s', // Analytics computer screens
+  },
+  {
+    title: 'Data Structures & Algorithms',
+    instructor: 'Love Babbar ',
+    progress: 28,
+    lesson: 'Trees, Graphs, and Pathfinding',
+    duration: '1h 12m left',
+    hue: 'purple',
+    image: 'https://imgs.search.brave.com/JJ6LPiGP7yKX95Kd7qU-2Wj1gcdrZ1yp3ghkcSvHYs0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9yZXBv/c2l0b3J5LWltYWdl/cy5naXRodWJ1c2Vy/Y29udGVudC5jb20v/NTYyOTI0MzYzLzdm/Y2QxN2E2LWFmYjYt/NGYxOC05MGU4LThi/ZWY2Y2FkYzNmMg', // Abstract code networks or algorithm vibe
   },
 ]
 
@@ -52,7 +63,7 @@ const recommendations = [
   },
 ]
 
-function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam }) {
+function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam, onOpenPractice }) {
   return (
     <div className="dashboard-shell">
       <header className="dashboard-topbar">
@@ -101,7 +112,7 @@ function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam }) {
         <section className="welcome-card">
           <div>
             <p className="welcome-tag">Welcome Back</p>
-            <h1>Keep your momentum, Athar.</h1>
+            <h1>Keep your momentum, Atharv</h1>
             <p>
               You are on a 12-day streak. Every focused session sharpens your
               edge. Let us continue where you left off.
@@ -125,21 +136,21 @@ function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam }) {
               <strong>46h</strong>
             </article>
           </div>
-          <div style={{ marginTop: '1.5rem' }}>
-            <button
-              type="button"
-              onClick={onTakeExam}
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                color: 'white', border: 'none', borderRadius: '10px',
-                fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(99,102,241,0.35)'
-              }}
-            >
-              🛡 Take Proctored Exam
-            </button>
-          </div>
+            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+              <button
+                type="button"
+                onClick={onTakeExam}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  color: 'white', border: 'none', borderRadius: '10px',
+                  fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(99,102,241,0.35)'
+                }}
+              >
+                🛡 Take Proctored Exam
+              </button>
+            </div>
         </section>
 
         <section className="continue-section">
@@ -150,7 +161,16 @@ function StudentDashboard({ onGoHome, onLogOut, onResumeCourse, onTakeExam }) {
           <div className="continue-grid">
             {activeCourses.map((course) => (
               <article className="continue-card" key={course.title} data-hue={course.hue}>
-                <div className="thumbnail" aria-hidden="true"></div>
+                <div 
+                  className="thumbnail" 
+                  aria-hidden="true" 
+                  style={{ 
+                    backgroundImage: `url(${course.image})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
+                ></div>
                 <div className="card-body">
                   <p className="tiny">{course.instructor}</p>
                   <h3>{course.title}</h3>

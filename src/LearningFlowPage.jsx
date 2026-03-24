@@ -3,22 +3,38 @@ import ReactPlayer from 'react-player'
 import { buildAuthenticityReport } from './authenticity/authenticityEngine'
 import { fetchCohereAuthenticitySignals } from './authenticity/cohereClient'
 import PracticeModule from './PracticeModule'
+import CodingPracticeModule from './coding/CodingModule'
 import InlineProctoring from './proctoring/InlineProctoring'
 import { issueOrUpdateCertificate } from './certificates/CertificateManager'
 import './LearningFlowPage.css'
 
 const DEFAULT_LESSON_VIDEO_URL = 'https://www.youtube.com/watch?v=kqtD5dpn9C8'
 
-const LESSON_MODULES = [
-  '1. Python Fundamentals and Variables',
-  '2. Flow Control and Loop Thinking',
-  '3. Functions and Data Structures',
-  '4. Explainability and Problem Breakdown',
-  '5. Practice Lab and Validation',
-  '6. Beginner Certification Exam',
-  '7. Intermediate Certification Exam',
-  '8. Expert Certification Exam',
-]
+const getLessonModules = (courseName) => {
+  if (courseName === 'Data Structures & Algorithms') {
+    return [
+      '1. Arrays and Mathematics',
+      '2. Recursion and Backtracking',
+      '3. Trees, Graphs, and Pathfinding',
+      '4. Dynamic Programming Basics',
+      '5. Live Coding Sandbox',
+      '6. Beginner Certification Exam',
+      '7. Intermediate Certification Exam',
+      '8. Expert Certification Exam',
+    ]
+  }
+
+  return [
+    '1. Python Fundamentals and Variables',
+    '2. Flow Control and Loop Thinking',
+    '3. Functions and Data Structures',
+    '4. Explainability and Problem Breakdown',
+    '5. Practice Lab and Validation',
+    '6. Beginner Certification Exam',
+    '7. Intermediate Certification Exam',
+    '8. Expert Certification Exam',
+  ]
+}
 
 const QUIZ_ITEMS = [
   {
@@ -104,7 +120,9 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
   })
 
   const [activeTab, setActiveTab] = useState('notes')
-
+  const [examSelections, setExamSelections] = useState({})
+  const [currentExamQuestion, setCurrentExamQuestion] = useState(0)
+  
   const currentQuestion = QUIZ_ITEMS[quizIndex]
   const lessonVideoUrl = lessonContext?.videoUrl || DEFAULT_LESSON_VIDEO_URL
 
@@ -459,6 +477,8 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
   const videoProgress =
     videoEnded ? 100 : Math.min(98, Math.round((maxWatchedTimeRef.current / denominator) * 100))
 
+  const activeLessonModules = getLessonModules(lessonContext?.courseName)
+
   return (
     <div className="learning-shell">
       <header className="learning-topbar">
@@ -475,7 +495,7 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
         <aside className="module-sidebar">
           <h3>Lesson Modules</h3>
           <ul>
-            {LESSON_MODULES.map((module, index) => (
+            {activeLessonModules.map((module, index) => (
               <li 
                 key={module} 
                 className={index === activeModule ? 'active' : ''}
@@ -500,10 +520,16 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
 
         <section className="lesson-main">
           {activeModule === 4 ? (
-            <PracticeModule masteryLevel={report?.learnerState === 'strong understanding' ? 'high' : 'low'} />
+            lessonContext?.courseName === 'Data Structures & Algorithms' ? (
+               <div style={{ height: '85vh', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                 <CodingPracticeModule isEmbedded={true} courseOverride="Data Structures & Algorithms" />
+               </div>
+            ) : (
+               <PracticeModule masteryLevel={report?.learnerState === 'strong understanding' ? 'high' : 'low'} />
+            )
           ) : activeModule >= 5 ? (
             <div className="module-placeholder" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', marginTop: '1rem' }}>
-              <h2 style={{ color: '#0f172a', marginBottom: '0.5rem', fontSize: '2rem' }}>{LESSON_MODULES[activeModule].substring(3)}</h2>
+              <h2 style={{ color: '#0f172a', marginBottom: '0.5rem', fontSize: '2rem' }}>{activeLessonModules[activeModule]?.substring(3)}</h2>
               <p style={{ color: '#64748b', marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem auto', lineHeight: '1.6' }}>
                 This is a proctored full-module milestone exam. Successful completion will permanently upgrade
                 your live verified certificate level on the blockchain database.
@@ -524,20 +550,79 @@ function LearningFlowPage({ lessonContext, onBackDashboard }) {
                   </button>
                 </div>
               ) : (
-                <button 
-                  type="button"
-                  onClick={() => {
-                    // Mapped: activeModule 5 -> Beginner, 6 -> Intermediate, 7 -> Expert
-                    const targetLevel = activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'
-                    const res = issueOrUpdateCertificate('Atharv Bhavsar', lessonContext?.courseName || 'Python for Automation', 0, targetLevel)
-                    if (res.success) {
-                      setCertResult({ ...res, moduleMatch: activeModule })
-                    }
-                  }}
-                  style={{ background: '#0f172a', color: 'white', padding: '1rem 2rem', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}
-                >
-                  Simulate Exam Passing & Claim '{activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'}' Level
-                </button>
+                (() => {
+                  const CERT_EXAMS = {
+                    5: [
+                      { q: "What is the exact time complexity of finding a node in a balanced Binary Search Tree?", opts: ["O(n)", "O(log n)", "O(n^2)", "O(1)"], ans: "O(log n)" },
+                      { q: "Which core paradigm invokes a function from within itself, utilizing a base condition to prevent infinite looping?", opts: ["Looping", "Class Inheritance", "Recursion", "Greedy approach"], ans: "Recursion" }
+                    ],
+                    6: [
+                      { q: "Which data structure structurally functions via LIFO (Last-In-First-Out) methodology?", opts: ["Queue", "Stack", "Tree", "Graph"], ans: "Stack" },
+                      { q: "What is the primary architectural advantage of utilizing a Hash Map for isolated key lookups?", opts: ["Maintains sorted order", "O(1) lookups on average", "Memory efficiency", "Zero collisions guaranteed"], ans: "O(1) lookups on average" }
+                    ],
+                    7: [
+                      { q: "Which algorithm finds the exact shortest geographic path spanning inside a weighted structural graph?", opts: ["DFS traversal", "Dijkstra's Algorithm", "Merge Sort approach", "Quick Sort chunking"], ans: "Dijkstra's Algorithm" },
+                      { q: "In Dynamic Programming architectures, what directly resolves and caches overlapping subproblem computations?", opts: ["Memoization", "Iterative Loops", "Breadth First Search", "Backtracking algorithms"], ans: "Memoization" }
+                    ]
+                  }
+
+                  const examData = CERT_EXAMS[activeModule] || CERT_EXAMS[5]
+                  const currentItem = examData[currentExamQuestion]
+                  const hasSelection = !!examSelections[`${activeModule}-${currentExamQuestion}`]
+
+                  return (
+                    <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'left', background: '#f8fafc', padding: '2rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                      <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Milestone Question {currentExamQuestion + 1} of 2</span>
+                      </div>
+                      <div style={{ marginBottom: '2rem' }}>
+                           <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem' }}>
+                             <h4 style={{ color: '#0f172a', marginBottom: '1.5rem', fontSize: '1.1rem', lineHeight: '1.5' }}>
+                               {currentItem.q}
+                             </h4>
+                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                               {currentItem.opts.map(opt => (
+                                  <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', padding: '1rem', border: examSelections[`${activeModule}-${currentExamQuestion}`] === opt ? '2px solid #3b82f6' : '1px solid #cbd5e1', borderRadius: '8px', background: examSelections[`${activeModule}-${currentExamQuestion}`] === opt ? '#eff6ff' : 'white', fontSize: '1rem', transition: 'all 0.1s' }}>
+                                     <input type="radio" name={`exam-${activeModule}-${currentExamQuestion}`} value={opt} checked={examSelections[`${activeModule}-${currentExamQuestion}`] === opt} onChange={() => setExamSelections(prev => ({ ...prev, [`${activeModule}-${currentExamQuestion}`]: opt }))} />
+                                     {opt}
+                                  </label>
+                               ))}
+                             </div>
+                           </div>
+                      </div>
+                      
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          if (examSelections[`${activeModule}-${currentExamQuestion}`] !== currentItem.ans) {
+                             alert('Incorrect module comprehension! Re-evaluate your algorithm logic and try again.')
+                             return
+                          }
+
+                          if (currentExamQuestion === 0) {
+                             setCurrentExamQuestion(1)
+                             return
+                          }
+                          
+                          // Final Question reached and answered correctly
+                          const targetLevel = activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'
+                          import('./certificates/CertificateManager.js').then(({ issueOrUpdateCertificate }) => {
+                            const res = issueOrUpdateCertificate('Atharv Bhavsar', lessonContext?.courseName || 'Python for Automation', 0, targetLevel)
+                            if (res.success) {
+                              setCurrentExamQuestion(0)
+                              setExamSelections({})
+                              setCertResult({ ...res, moduleMatch: activeModule })
+                            }
+                          })
+                        }}
+                        disabled={!hasSelection}
+                        style={{ background: hasSelection ? '#0f172a' : '#94a3b8', color: 'white', padding: '1.25rem 2rem', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: hasSelection ? 'pointer' : 'not-allowed', fontSize: '1.1rem', width: '100%', transition: 'all 0.2s' }}
+                      >
+                        {currentExamQuestion === 0 ? 'Confirm & Proceed to Final Question →' : `Submit Exam & Claim '${activeModule === 5 ? 'Beginner' : activeModule === 6 ? 'Intermediate' : 'Expert'}' Level`}
+                      </button>
+                    </div>
+                  )
+                })()
               )}
             </div>
           ) : activeModule === 2 ? (

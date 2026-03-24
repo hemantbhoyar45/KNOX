@@ -5,6 +5,7 @@ import LearningFlowPage from './LearningFlowPage'
 import ProctorFlow from './proctoring/ProctorFlow'
 import CertificateView from './certificates/CertificateView'
 import CertificateVerificationPage from './certificates/CertificateVerificationPage'
+import CodingPracticeModule from './coding/CodingModule'
 import './App.css'
 
 function App() {
@@ -23,6 +24,10 @@ function App() {
 
     if (window.location.pathname === '/exam') {
       return '/exam'
+    }
+
+    if (window.location.pathname === '/practice') {
+      return '/practice'
     }
 
     if (window.location.pathname.startsWith('/certificate/')) {
@@ -92,6 +97,16 @@ function App() {
         onLogOut={() => navigateTo('/login')}
         onResumeCourse={openLearningFlow}
         onTakeExam={() => navigateTo('/exam')}
+        onOpenPractice={() => navigateTo('/practice')}
+      />
+    )
+  }
+
+  if (route === '/practice') {
+    return (
+      <CodingPracticeModule
+        completedCourses={['Data Structures & Algorithms', 'Python for Automation']}
+        onBack={() => navigateTo('/dashboard')}
       />
     )
   }

@@ -14,8 +14,9 @@ export default function CertificateView({ certId, onBack }) {
     )
   }
 
-  // The link encoded in the QR code (points to our live verification page)
-  const verifyUrl = `${window.location.origin}/verify/${certId}`
+  // The dynamic link encoded in the QR code ensures the actual dot-matrix of the QR physically changes 
+  // whenever the student is upgraded to the next skill level!
+  const verifyUrl = `${window.location.origin}/verify/${certId}?level=${certData.skillLevel.toLowerCase()}&updated=${new Date(certData.lastUpdate).getTime()}`
   const formattedDate = new Date(certData.issueDate).toLocaleDateString(undefined, {
     year: 'numeric', month: 'long', day: 'numeric'
   })
@@ -31,7 +32,7 @@ export default function CertificateView({ certId, onBack }) {
           </header>
 
           <main className="cert-body">
-            <h2 className="student-name">{certData.studentName}</h2>
+            <h2 className="cert-student-name">{certData.studentName}</h2>
             <div className="divider"></div>
             <p className="cert-has">has successfully completed</p>
             <h3 className="course-name">{certData.courseName}</h3>
