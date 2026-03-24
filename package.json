@@ -7,9 +7,9 @@
     "dev": "vite",
     "dev:api": "node server/authenticity-api.mjs",
     "dev:full": "node server/dev-runner.mjs",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build": "vite build"
   },
   "dependencies": {
     "face-api.js": "^0.22.2",
