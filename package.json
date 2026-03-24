@@ -30,3 +30,9 @@
     "vite": "^8.0.1"
   }
 }
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install"
+}
